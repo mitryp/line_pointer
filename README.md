@@ -1,16 +1,43 @@
 # line_pointer
 
-A new Flutter project.
+A Flutter GUI for geometry exercise parser.
 
-## Getting Started
+It has only basic functionality to draw lines and points.
+The exercises are defined using the following grammar:
 
-This project is a starting point for a Flutter application.
+```text
+<роздільник дій> ::= '.'
+<роздільник декларацій> ::= ',' | ';'
 
-A few resources to get you started if this is your first Flutter project:
+<координати> ::= '(' ['\d'] ',' ['\d'] ')'
+<ідентифікатор:точка> ::= '[A-Z]' <координати>?, // напр. M | M(1,12)
+<ідентифікатор:пряма> ::= <ідентифікатор:точка> <ідентифікатор:точка> | '[a-z]'
+<ідентифікатор> ::= <ідентифікатор:пряма> | <ідентифікатор:точка>
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+<тип> ::= 'пряма' | 'точка'
+<об'єкт> ::= <тип> { <ідентифікатор> <роздільник декларацій>? } 
+                                       // якщо ідентифікатор не заданий, 
+                                       // мається на увазі попередній об'єкт цього типу в межах визначення дії, або
+                                       // кореневий об'єкт цього типу, якщо таких об'єктів немає
+<властивість> ::= ( 'перетинається' | 'паралельна' | 'перпендикулярна' ) <ідентифікатор:пряма>
+<декларація> ::= [ ( <об'єкт> <властивість>? ) <роздільник декларацій>? ]
+                                       // роздільники мають бути присутні завжди, орім як після 
+                                       // останньої декларації, де це не вимагається
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+<операція> ::= 'побудувати' | 'провести' | 'позначити'
+<дія> ::= <операція> [ <декларація> <роздільник декларацій>? ]
+
+<умова> ::= <об'єкт> [ <властивість> <роздільник декларацій>? ]
+
+<задача> ::= [<дії> <роздільник дій>] ( ( 'де' | 'через' ) [ <умова> ] )?
+```
+
+Definitions:
+
+- круглі дужки визначають порядок виконання
+- a | b - граматиці відповідає a або b
+- {a} - 'a' може зустрітися нуль або більше разів
+- [a] - 'a' може зустрітися один або більше разів
+- a? - 'a' може зустрітися нуль або один раз
+- '[a-z]' - граматиці відповідають символи від 'a' до 'z' включно
+- '\d' - граматиці відповідає будь-яка цифра (0-9)
